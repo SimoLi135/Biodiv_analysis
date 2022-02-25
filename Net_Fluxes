@@ -1,0 +1,25 @@
+var country = ee.FeatureCollection('users/simonalippi13/gaul_acp_terr');
+
+var ago = country.filter(ee.Filter.eq('isoa3_id', 'AGO'));
+
+var flux = ee.ImageCollection('projects/wri-datalab/gfw-data-lake/net-flux-forest-extent-per-ha-v1-2-1-2001-2020/net-flux-global-forest-extent-per-ha-2001-2020');
+
+var flux_image = ee.Image(flux.reduce(ee.Reducer.min()).multiply(0.09)).clip(ago);
+
+
+
+print(flux_image)
+var flux_tot = (flux_image.divide(1000000)).divide(20).reduceRegions({
+  'collection': ago,
+  'reducer': ee.Reducer.sum(),
+   'scale': 30
+});
+print(flux_tot);
+
+
+
+Export.table.toDrive({
+  collection: flux_tot,
+  description:'test',
+  fileFormat: 'CSV'
+});
