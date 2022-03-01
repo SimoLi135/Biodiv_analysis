@@ -16,7 +16,7 @@ var forest2000 = treecover2000Area.divide(1000000).reduceRegions({
 });
 
 var lossImage = gfcImage.select('loss');
-var lossArea = lossImage.multiply(ee.Image.pixelArea());
+var lossArea = lossImage.multiply(treecover2000.gt(30)).multiply(ee.Image.pixelArea());
 //area totale foreste loss
 
 var loss = lossArea.divide(1000000).reduceRegions({
@@ -31,12 +31,12 @@ print('Loss:',loss);
 // te lo esporta sulla folder principale del tuo GDrive
 Export.table.toDrive({
 collection: forest2000,
-description:'cover',
+description:'cover_tot',
 fileFormat: 'CSV',
 });
 
 Export.table.toDrive({
 collection:loss,
-description:'loss',
+description:'loss_tot',
 fileFormat: 'CSV'
 });
