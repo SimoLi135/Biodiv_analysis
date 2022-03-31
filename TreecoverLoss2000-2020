@@ -28,7 +28,7 @@ var loss = lossArea.divide(1000000).reduceRegions({
 print('Cover:',forest2000);
 print('Loss:',loss);
 
-// te lo esporta sulla folder principale del tuo GDrive
+
 Export.table.toDrive({
 collection: forest2000,
 description:'cover_tot',
