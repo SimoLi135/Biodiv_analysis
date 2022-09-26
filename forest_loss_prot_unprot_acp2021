@@ -1,0 +1,77 @@
+var display=true;
+
+var scale = 30;
+
+
+
+var ft = ee.FeatureCollection('users/simonalippi13/acp_pa_terr_sett22_prot_unprot');
+
+var ft_selected_prot = ft.filterMetadata('protection', 'equals', 'protected');
+
+var ft_selected_unprot = ft.filterMetadata('protection', 'equals', 'unprotected' );
+
+
+
+
+
+var dataset = ee.Image('UMD/hansen/global_forest_change_2021_v1_9').clip(ft);
+
+var treecover2000 = dataset.select('treecover2000');
+
+var treecover2000Area = treecover2000.gt(30).multiply(ee.Image.pixelArea());
+
+
+
+
+
+
+var lossImage = dataset.select('loss');
+
+var lossArea = lossImage.multiply(treecover2000.gt(30)).multiply(ee.Image.pixelArea());
+
+
+
+var stats_prot = lossArea.divide(1000000).reduceRegions({
+
+'collection': ft_selected_prot,
+
+'reducer': ee.Reducer.sum(),
+
+'scale': scale
+
+
+
+});
+
+var stats_unprot = lossArea.divide(1000000).reduceRegions({
+
+'collection': ft_selected_unprot,
+
+'reducer': ee.Reducer.sum(),
+
+'scale': scale
+
+
+
+});
+
+
+
+
+
+Export.table.toDrive({
+collection: stats_prot,
+description:'Forest_Loss_prot_2021',
+fileFormat: 'CSV',
+});
+
+Export.table.toDrive({
+collection:stats_unprot,
+description:'Forest_Loss_unprot_2021',
+fileFormat: 'CSV'
+});
+
+// vedi la colonna "sum" sotto features->properties
+print('Forest_Loss_prot_2021:',stats_prot);
+print('Forest_Loss_unprot_2021',stats_unprot);
+
