@@ -1,0 +1,71 @@
+var display=true;
+
+var scale = 30;
+
+
+
+var ft = ee.FeatureCollection('users/simonalippi13/acp_pa_terr_sett22_prot_unprot');
+
+var ft_selected_prot = ft.filterMetadata('protection', 'equals', 'protected');
+
+var ft_selected_unprot = ft.filterMetadata('protection', 'equals', 'unprotected' );
+
+
+
+
+
+
+
+var dataset = ee.Image('users/potapovpeter/IFL_2020').clip(ft);
+
+
+
+
+
+
+var ifl2020Area = dataset.multiply(ee.Image.pixelArea());
+
+
+
+var stats_prot = ifl2020Area.divide(1000000).reduceRegions({
+
+'collection': ft_selected_prot,
+
+'reducer': ee.Reducer.sum(),
+
+'scale': scale
+
+
+
+});
+
+var stats_unprot = ifl2020Area.divide(1000000).reduceRegions({
+
+'collection': ft_selected_unprot,
+
+'reducer': ee.Reducer.sum(),
+
+'scale': scale
+
+
+
+});
+
+
+
+
+
+Export.table.toDrive({
+collection: stats_prot,
+description:'ifl2020Area_prot_2020',
+fileFormat: 'CSV',
+});
+
+Export.table.toDrive({
+collection:stats_unprot,
+description:'ifl2020Area_unprot_2020',
+fileFormat: 'CSV'
+});
+
+
+
