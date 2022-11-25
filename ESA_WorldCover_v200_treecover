@@ -16,7 +16,7 @@ var forest_image = forest.multiply(ee.Image.pixelArea()).clip(country);
 
 var forest_area = forest_image.divide(1000000).reduceRegions({
 
-'collection':civ,
+'collection':country,
 
 'reducer': ee.Reducer.sum(),
 
