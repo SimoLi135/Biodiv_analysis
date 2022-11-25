@@ -1,0 +1,53 @@
+var display=true;
+
+var scale = 30;
+
+
+
+var ft = ee.FeatureCollection('users/simonalippi13/gaul_acp_terr');
+
+
+
+
+
+
+
+
+var dataset = ee.Image('users/potapovpeter/IFL_2020').clip(ft);
+
+
+
+
+
+
+var ifl2020Area = dataset.multiply(ee.Image.pixelArea());
+
+
+
+
+
+
+
+
+var stats = ifl2020Area.divide(1000000).reduceRegions({
+
+'collection': ft,
+
+'reducer': ee.Reducer.sum(),
+
+'scale': scale
+
+
+
+});
+
+
+
+
+
+Export.table.toDrive({
+collection: stats,
+description:'ifl2020Area2020',
+fileFormat: 'CSV',
+});
+
