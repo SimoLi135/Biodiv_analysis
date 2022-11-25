@@ -2,19 +2,19 @@
 var map = ee.ImageCollection('ESA/WorldCover/v200');
 
 var mosaic = map.mosaic() 
-var forest = mosaic.eq(10).selfMask() 
+var trees = mosaic.eq(10).selfMask() 
 
 var country = ee.FeatureCollection('users/simonalippi13/gaul_acp_terr');
 
 
 
-var forest_image = forest.multiply(ee.Image.pixelArea()).clip(country);
+var trees_image = trees.multiply(ee.Image.pixelArea()).clip(country);
 
  
 
-//sum of forest
+//sum of tree areas
 
-var forest_area = forest_image.divide(1000000).reduceRegions({
+var trees_area = trees_image.divide(1000000).reduceRegions({
 
 'collection':country,
 
@@ -25,8 +25,8 @@ var forest_area = forest_image.divide(1000000).reduceRegions({
 });
 
 Export.table.toDrive({
-  collection: forest_area,
-  description:'forest_area',
+  collection: trees_area,
+  description:'trees_area',
   fileFormat: 'CSV'
 });
-print('Cover:',forest_area);
+print('Cover:',trees_area);
