@@ -1,0 +1,56 @@
+var map = ee.ImageCollection('ESA/WorldCover/v200');
+
+ 
+
+var mosaic = map.mosaic() // convert image collection into an image
+
+ 
+
+var crop = mosaic.eq(40).selfMask()
+
+ 
+
+var country = ee.FeatureCollection('users/simonalippi13/Gaul_acp');
+
+ 
+
+ 
+
+var crop_image = crop.multiply(ee.Image.pixelArea()).clip(country);
+
+ 
+
+ 
+
+//sum of forest
+
+ 
+
+var crop_area = crop_image.divide(1000000).reduceRegions({
+
+ 
+
+'collection':country,
+
+ 
+
+'reducer': ee.Reducer.sum(),
+
+ 
+
+'scale': 10
+
+ 
+
+});
+
+ 
+
+ 
+
+Export.table.toDrive({
+  collection: crop_area,
+  description:'crop_area',
+  fileFormat: 'CSV'
+});
+print('Cover:',crop_area);
